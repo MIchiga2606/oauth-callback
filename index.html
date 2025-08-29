@@ -1,18 +1,54 @@
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get("code");
-  const codeBox = document.getElementById("code");
-  const tokenBox = document.getElementById("token");
-  const errorBox = document.getElementById("error");
-
-  if (code) {
-    codeBox.textContent = code;
-    tokenBox.textContent = "Copia este código y úsalo en tu servidor para obtener el access_token.";
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(code).catch(() => {});
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>OAuth Callback</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f9;
+      text-align: center;
+      padding: 50px;
     }
-  } else {
-    codeBox.textContent = "No se recibió ningún código.";
-    tokenBox.textContent = "No se puede solicitar token sin código.";
-  }
-</script>
+    h1 {
+      color: #333;
+    }
+    .code-box {
+      margin-top: 20px;
+      padding: 10px;
+      background: #fff;
+      border: 2px solid #4CAF50;
+      border-radius: 5px;
+      display: inline-block;
+      min-width: 400px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>✅ Código recibido</h1>
+  <p>Copia el siguiente <b>authorization code</b> y úsalo para obtener tu access_token:</p>
+  <div class="code-box">
+    <input type="text" id="authCode" readonly>
+  </div>
+
+  <script>
+    // Obtener parámetros de la URL
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+
+    // Mostrar el code en el input
+    if (code) {
+      document.getElementById("authCode").value = code;
+    } else {
+      document.getElementById("authCode").value = "⚠️ No se encontró ningún code en la URL";
+    }
+  </script>
+</body>
+</html>
