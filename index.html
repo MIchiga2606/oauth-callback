@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>OAuth Callback</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 2rem;
+    }
+    .container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+    }
+    .code, .token {
+      background: #eee;
+      padding: 1rem;
+      border-radius: 4px;
+      font-family: monospace;
+      word-break: break-word;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 Callback OAuth</h1>
+    <p><strong>Code recibido:</strong></p>
+    <div id="code" class="code">Cargando...</div>
+
+    <p><strong>Token recibido:</strong></p>
+    <div id="token" class="token">Esperando respuesta...</div>
+
+    <div id="error" class="error"></div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const codeBox = document.getElementById("code");
+    const tokenBox = document.getElementById("token");
+    const errorBox = document.getElementById("error");
+
+    if (code) {
+      codeBox.textContent = code;
+
+      // Configura aquí tu endpoint de intercambio de token
+      const tokenEndpoint = "https://tu-servidor.com/oauth/token"; // ← reemplaza con tu endpoint real
+
+      // Datos para el intercambio (ajusta según tu proveedor OAuth)
+      const data = {
+        code: code,
+        client_id: "TU_CLIENT_ID",
+        client_secret: "TU_CLIENT_SECRET",
+        redirect_uri: "https://michiga2606.github.io/oauth-callback/",
+        grant_type: "authorization_code"
+      };
+
+      fetch(tokenEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(json => {
+        if (json.access_token) {
+          tokenBox.textContent = json.access_token;
+        } else {
+          tokenBox.textContent = "No se recibió token.";
+          errorBox.textContent = JSON.stringify(json, null, 2);
+        }
+      })
+      .catch(err => {
+        tokenBox.textContent = "Error al obtener token.";
+        errorBox.textContent = err.message;
+      });
+
+    } else {
+      codeBox.textContent = "No se recibió ningún código.";
+      tokenBox.textContent = "No se puede solicitar token sin código.";
+    }
+  </script>
+</body>
+</html>
